@@ -1,5 +1,5 @@
 #![allow(dead_code)]
- use core::fmt::{Write,Result};
+ use core::fmt::{self,Write,Result};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u8)]
@@ -136,3 +136,29 @@ pub static ref WRITER: Mutex<Writer>=  Mutex::new(Writer{
       Ok(())
    }
  }
+
+ /* --------------------------------------------------------------------------------------
+ 
+               Print and Println Macros
+----------------------------------------------------------------------------
+ 
+*/ 
+  
+
+
+ #[macro_export]
+macro_rules! print {
+ ($($arg:tt)*) => ($crate::vga_buffer::_print(format_args!($($arg)*)));
+ }
+
+#[macro_export]
+macro_rules! println {
+    () => ($crate::print!("\n"));
+    ($($arg:tt)*) => ($crate::print!("{}\n", format_args!($($arg)*)));
+}
+
+#[doc(hidden)]
+pub fn _print(args: fmt::Arguments) {
+ 
+    WRITER.lock().write_fmt(args).unwrap();
+}
