@@ -117,20 +117,17 @@ fn clear_row(&mut self,row:usize) {
       }
    }
  }
-
- pub fn print_something() {
-   let mut writer = Writer{
+// Global Writer interface
+use lazy_static::lazy_static;
+use spin::Mutex;
+lazy_static!{
+pub static ref WRITER: Mutex<Writer>=  Mutex::new(Writer{
       column_position:0,
       color_code:ColorCode::new(Color::Yellow, Color::Black),
-      buffer: unsafe { &mut *(0xb8000 as *mut Buffer)}
-   };
-    writer.write_btye(b'H');
-    writer.write_string("ello ");
-   writer.write_string("Wörld!");
-   // using the write! macro
-   write!(writer,"The numbers are {} and {}",42,1.0/3.0).unwrap();
- }
-
+      buffer: unsafe { &mut *(0xb8000 as *mut Buffer)},
+   });
+}
+ 
 // implement write and writeln! macro;
 
  impl Write for Writer {
