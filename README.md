@@ -6,4 +6,5 @@ A mininal Rust Kernel based on [**Philipp Oppermann's "BlogOS"**](https://os.phi
 - Qemu
 - Hardware (optional since we're using Qemu)
 - Rust-src component and compiler_builtins
+- bootimage( cargo install)
 
