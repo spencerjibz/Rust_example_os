@@ -5,6 +5,6 @@ A mininal Rust Kernel based on [**Philipp Oppermann's "BlogOS"**](https://os.phi
 - Rust nightly (versions from 2020 onwards)
 - Qemu
 - Hardware (optional since we're using Qemu)
-- Rust-src component and compiler_builtins
+- rust-src component,compiler_builtins and llvm-tools-preview
 - bootimage( cargo install)
 
