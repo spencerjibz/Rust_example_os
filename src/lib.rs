@@ -6,7 +6,7 @@
 
 use core::panic::PanicInfo;
 pub mod serial;
- pub mod vga_buffer;
+pub mod vga_buffer;
 pub trait Testable {
     fn run(&self) -> ();
 }
@@ -52,7 +52,6 @@ fn panic(info: &PanicInfo) -> ! {
 }
 
 /* ------------------------------------------------------------- --------------------------
-
     HANLDING QEMU EXIT FOR TESTING
 -----------------------------------------------------------------------------------------------*/
 
