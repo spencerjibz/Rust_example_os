@@ -4,10 +4,19 @@
 #![test_runner(crate::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 #![allow(clippy::all)]
+#![feature(abi_x86_interrupt)]
+#![allow(dead_code)]
 use core::panic::PanicInfo;
 pub mod serial;
 pub mod vga_buffer;
-pub trait Testable {
+mod interrupts;
+
+
+
+ pub fn init()  {
+    interrupts::init_idt();
+ }
+ pub trait Testable {
     fn run(&self) -> ();
 }
 

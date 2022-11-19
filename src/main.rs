@@ -12,8 +12,13 @@ use core::panic::PanicInfo;
 pub extern "C" fn _start() -> ! {
     println!("Hello World{}", "!");
 
+    blog_os::init(); // new_line
+
+// invoke a breakpoint exception;
+x86_64::instructions::interrupts::int3();
     #[cfg(test)]
     test_main();
+    println!("it didnt crash!");
 
     loop {}
 }
