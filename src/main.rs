@@ -14,6 +14,7 @@ pub extern "C" fn _start() -> ! {
 
     blog_os::init(); // new_line
                      // trigger a page fault;
+    #[allow(unconditional_recursion)]
     fn stack_overflow() {
         stack_overflow()
     }
