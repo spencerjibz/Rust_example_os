@@ -14,11 +14,11 @@ pub extern "C" fn _start() -> ! {
 
     blog_os::init(); // new_line
                      // trigger a page fault;
-    #[allow(unconditional_recursion)]
+    #[allow(unconditional_recursion,dead_code)]
     fn stack_overflow() {
         stack_overflow()
     }
-    stack_overflow();
+   // stack_overflow();
     #[cfg(test)]
     test_main();
     println!("it didnt crash!");
