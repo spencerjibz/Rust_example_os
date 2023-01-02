@@ -20,6 +20,8 @@ pub mod gdt;
     unsafe{
         interrupts::PICS.lock().initialize();
     }
+    // enable external interrupts
+    x86_64::instructions::interrupts::enable();
  }
  pub trait Testable {
     fn run(&self) -> ();

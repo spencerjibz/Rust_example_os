@@ -23,7 +23,12 @@ pub extern "C" fn _start() -> ! {
     test_main();
     println!("it didnt crash!");
 
-    loop {}
+    loop {
+         use blog_os::print;
+         print!("-");
+         // slow down the timer;
+         for _ in 0..10000 {}
+    }
 }
 
 /// This function is called on panic.
