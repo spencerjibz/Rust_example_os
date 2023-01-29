@@ -10,6 +10,7 @@ use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
 
 pub enum InterruptIndex {
     Timer = PIC_1_OFFSET,
+    Keyboard,
 }
 impl From<InterruptIndex> for u8 {
     fn from(index: InterruptIndex) -> Self {
@@ -37,7 +38,10 @@ lazy_static! {
               .set_stack_index(gdt::DOUBLE_FAULT_IST_INDEX);
          }
          idt[InterruptIndex::Timer.into()].set_handler_fn(timer_interrupt_handler);
-        idt
+         //  add keyboard interrupt
+          idt[InterruptIndex::Keyboard.into()].set_handler_fn(keyboard_interrupt_handler);
+         idt
+
     };
 }
 
@@ -79,5 +83,19 @@ extern "x86-interrupt" fn timer_interrupt_handler(_stack_frame: InterruptStackFr
     unsafe {
         PICS.lock()
             .notify_end_of_interrupt(InterruptIndex::Timer.into());
+    }
+}
+/*-----------------------------------------------------------------------
+            KEYBOARD INTERRUPT
+* ----------------------------------------------------------------
+
+*/
+
+// keyboard interrupt handler
+extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: InterruptStackFrame) {
+    print!("k");
+    unsafe {
+        PICS.lock()
+            .notify_end_of_interrupt(InterruptIndex::Keyboard.into());
     }
 }
