@@ -5,12 +5,13 @@
 #![reexport_test_harness_main = "test_main"]
 #![allow(clippy::all)]
 #![feature(abi_x86_interrupt)]
-#![allow(dead_code)]
+#![allow(dead_code,unused)]
 use core::panic::PanicInfo;
 pub mod gdt;
 mod interrupts;
 pub mod serial;
 pub mod vga_buffer;
+pub mod memory;
 
 pub fn init() {
     gdt::init();
@@ -51,10 +52,15 @@ pub fn test_panic_handler(info: &PanicInfo) -> ! {
     hlt_loop();
 }
 
-/// Entry point for `cargo test`
+
 #[cfg(test)]
-#[no_mangle]
-pub extern "C" fn _start() -> ! {
+use bootloader::{BootInfo,entry_point};
+// Entry point for `cargo test`
+#[cfg(test)]
+ entry_point!(test_kernel_main);
+
+ #[cfg(test)]
+ fn test_kernel_main(_boot_info:&'static BootInfo) -> ! {
     init();
     test_main();
     hlt_loop();
@@ -67,7 +73,7 @@ fn panic(info: &PanicInfo) -> ! {
 }
 
 /* ------------------------------------------------------------- --------------------------
-    HANLDING QEMU EXIT FOR TESTING
+    HANDLING QEMU EXIT FOR TESTING
 -----------------------------------------------------------------------------------------------*/
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
