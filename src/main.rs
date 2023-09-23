@@ -5,7 +5,7 @@
 #![reexport_test_harness_main = "test_main"]
 #![allow(clippy::all)]
 
-use blog_os::{memory, println};
+use blog_os::{memory::{BootInfoFrameAllocator,self}, println};
 
 use core::panic::PanicInfo;
 
@@ -18,28 +18,18 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
 
     blog_os::init(); // new_lin
 
-    use x86_64::{structures::paging::Translate, VirtAddr};
+    use x86_64:: VirtAddr;
 
     let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
     // new:initialize a mapper
-    let mapper = unsafe { memory::init(phys_mem_offset) };
+    let mut _mapper = unsafe { memory::init(phys_mem_offset) };
+    let mut _frame_allocator = unsafe {
+         BootInfoFrameAllocator::init(&boot_info.memory_map)
+    };
 
-    let addresses = [
-        // the identity-map vga buffer page
-        0xb8000,
-        // some code page
-        0x201008,
-        // some stack page,
-        0x0100_0020_1a10_u64,
-        // virtual address mapped to physical address 0,
-        boot_info.physical_memory_offset,
-    ];
+    // map an unused page
 
-    for &address in &addresses {
-        let virt = VirtAddr::new(address);
-        let phys = mapper.translate_addr(virt);
-        println!("{:?} -> {:?}", virt, phys);
-    }
+ 
     /* trigger a page fault;
 
     let ptr = 0x2049b6 as *mut u32;
