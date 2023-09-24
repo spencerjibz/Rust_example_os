@@ -6,7 +6,7 @@
 #![allow(clippy::all)]
 extern crate alloc;
 use alloc::boxed::Box;
-use blog_os::{memory::{BootInfoFrameAllocator,self}, println};
+use blog_os::{memory::{BootInfoFrameAllocator,self}, println,allocator};
 
 use core::panic::PanicInfo;
 
@@ -23,12 +23,13 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
 
     let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
     // new:initialize a mapper
-    let mut _mapper = unsafe { memory::init(phys_mem_offset) };
-    let mut _frame_allocator = unsafe {
+    let mut mapper = unsafe { memory::init(phys_mem_offset) };
+    let mut frame_allocator = unsafe {
          BootInfoFrameAllocator::init(&boot_info.memory_map)
     };
 
     // map an unused page
+     allocator::init_heap(&mut mapper, &mut frame_allocator).expect("heap initialization failed");
 
  
    let x  = Box::new(41);
