@@ -5,13 +5,14 @@
 #![reexport_test_harness_main = "test_main"]
 #![allow(clippy::all)]
 extern crate alloc;
-use alloc::boxed::Box;
+
 use blog_os::{memory::{BootInfoFrameAllocator,self}, println,allocator};
 
 use core::panic::PanicInfo;
 
 use bootloader::{entry_point, BootInfo};
 
+use alloc::{boxed::Box, vec, vec::Vec, rc::Rc};
 entry_point!(kernel_main);
 //#[no_mangle]
 fn kernel_main(boot_info: &'static BootInfo) -> ! {
@@ -29,12 +30,31 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     };
 
     // map an unused page
-     allocator::init_heap(&mut mapper, &mut frame_allocator).expect("heap initialization failed");
+    allocator::init_heap(&mut mapper, &mut frame_allocator).expect("heap initialization failed");
 
- 
-   let x  = Box::new(41);
-   println!("{x}");
+    // allocate a number on the heap
+    let heap_value = Box::new(41);
+    println!("heap_value at {:p}", heap_value);
 
+    // create a dynamically sized vector
+    let mut vec = Vec::new();
+    for i in 0..500 {
+        vec.push(i);
+    }
+    println!("vec at {:p}", vec.as_slice());
+
+    // create a reference counted vector -> will be freed when count reaches 0
+    let reference_counted = Rc::new(vec![1, 2, 3]);
+    let cloned_reference = reference_counted.clone();
+    println!(
+        "current reference count is {}",
+        Rc::strong_count(&cloned_reference)
+    );
+    core::mem::drop(reference_counted);
+    println!(
+        "reference count is {} now",
+        Rc::strong_count(&cloned_reference)
+    );
 
 
     /* trigger a page fault;
@@ -50,7 +70,7 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
         *ptr = 42;
       }
        println!("write worked");
-       */
+    */
     #[allow(unconditional_recursion, dead_code)]
     fn stack_overflow() {
         stack_overflow()
