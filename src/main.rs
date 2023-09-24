@@ -4,7 +4,8 @@
 #![test_runner(blog_os::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 #![allow(clippy::all)]
-
+extern crate alloc;
+use alloc::boxed::Box;
 use blog_os::{memory::{BootInfoFrameAllocator,self}, println};
 
 use core::panic::PanicInfo;
@@ -30,6 +31,11 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     // map an unused page
 
  
+   let x  = Box::new(41);
+   println!("{x}");
+
+
+
     /* trigger a page fault;
 
     let ptr = 0x2049b6 as *mut u32;

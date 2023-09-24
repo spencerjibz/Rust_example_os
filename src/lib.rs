@@ -5,12 +5,15 @@
 #![reexport_test_harness_main = "test_main"]
 #![allow(clippy::all)]
 #![feature(abi_x86_interrupt)]
-#![allow(dead_code,unused)]
-use core::panic::PanicInfo;
+#![allow(dead_code, unused)]
+
+use core::{alloc::Layout, panic::PanicInfo};
+pub mod allocator;
 pub mod gdt;
 mod interrupts;
 pub mod serial;
 pub mod vga_buffer;
+extern crate alloc;
 pub mod memory;
 
 pub fn init() {
@@ -52,15 +55,14 @@ pub fn test_panic_handler(info: &PanicInfo) -> ! {
     hlt_loop();
 }
 
-
 #[cfg(test)]
-use bootloader::{BootInfo,entry_point};
+use bootloader::{entry_point, BootInfo};
 // Entry point for `cargo test`
 #[cfg(test)]
- entry_point!(test_kernel_main);
+entry_point!(test_kernel_main);
 
- #[cfg(test)]
- fn test_kernel_main(_boot_info:&'static BootInfo) -> ! {
+#[cfg(test)]
+fn test_kernel_main(_boot_info: &'static BootInfo) -> ! {
     init();
     test_main();
     hlt_loop();
@@ -99,4 +101,3 @@ pub fn hlt_loop() -> ! {
         x86_64::instructions::hlt();
     }
 }
-
